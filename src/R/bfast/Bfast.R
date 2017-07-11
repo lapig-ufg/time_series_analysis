@@ -39,16 +39,19 @@ dates <- as.Date(strDates)
 
 ###
 ###
-r.p = na.interp(as.numeric(as.vector(r[cellFromXY(r, c(-52.2764, -12.7874))])))
+r.p = na.interp(
+  as.numeric(
+    as.vector(
+      r[cellFromXY(r, c(-52.2764, -12.7874))])))
 
 ###
 ###
 #serie temporal
 Yt = bfastts(r.p, dates, type = c("16-day"))
-ti <- time(Yt)
-St <- stl(Yt, "periodic")$time.series[, "seasonal"]
-ti <- time(Yt)
-Vt <- Yt - St
+# ti <- time(Yt)
+# St <- stl(Yt, "periodic")$time.series[, "seasonal"]
+# ti <- time(Yt)
+# Vt <- Yt - St
 
 ###
 ###
@@ -57,17 +60,16 @@ bfit = bfast(Yt,
              season = season,
              max.iter = 1)
 plot(bfit, type = c("trend"), ylim = c(-0.3, 1))
-points(St, col = "red", lty = 3, lwd = 1, type = "l")
 breaks_bfast = bfit$output[[1]]$bp.Vt
-lines(breaks_bfast, col = "blue")
 
 breaks = bfit$output[[1]]$Vt.bp
+length(breaks)
 trendCmp = bfit$output[[1]]$Tt
 BreaksDate = dates[breaks]
 
-lastBreak = if(!bfit$nobp$Vt) breaks[length(breaks)] else 1
-lastBreakDate = dates[lastBreak]
-lastBreakJulianDate = format(lastBreakDate, "%Y%j")
+# lastBreak = if(!bfit$nobp$Vt) breaks[length(breaks)] else 1
+# lastBreakDate = dates[lastBreak]
+# lastBreakJulianDate = format(lastBreakDate, "%Y%j")
 
 lastSegment = trendCmp[lastBreak:length(trendCmp)]
 slope = (lastSegment[2*floor(length(lastSegment)/3)] - lastSegment[floor(length(lastSegment)/3)])/(2*floor(length(lastSegment)/3) - floor(length(lastSegment)/3))
