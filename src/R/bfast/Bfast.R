@@ -14,17 +14,15 @@ library(forecast)
 ###
 ###
 #Arquivos
+#setwd('/home/jose/Documentos/LAPIG/time_series_analysis/data/')
 
-setwd('/home/jose/Documentos/LAPIG/time_series_analysis/data/')
+r <- brick('E:/pa_br_mod13q1_ndvi_250_2000_2017.tif');
+samples = read.csv('../../../data/bfast/samples.csv')
+dates = scan('../../../data/bfast/timeline', what = 'date')
 
-r <- brick('/run/user/1000/gvfs/smb-share:server=10.0.0.25,share=dados/PORTAL/time-series-db/pa_br_mod13q1_ndvi_250_2000_2017.tif');
-samples = read.csv('bfast/samples.csv');
-dates = scan('bfast/timeline', what = 'date')
+cellNumber = samples[,5]
 
-cellNumber = samples[4,5]
-
-id = samples[4,1]
-
+id = samples[,1]
 
 #Parametros dos bfast
 h = 0.16099599
@@ -46,44 +44,41 @@ dates <- as.Date(dates)
 r.p = na.interp(
   as.numeric(
     as.vector(
-      r[cellNumber])))
+      r[cellNumber[4] ])))
 
 ###
 ###
-#serie temporal
+#Transformar em serie temporal
 Yt = bfastts(r.p, dates, type = c("16-day"))
-ti <- time(Yt)
-St <- stl(Yt, "periodic")$time.series[, "seasonal"]
-ti <- time(Yt)
-Vt <- Yt - St
+
+#Rodar o bfast
+bfit = bfast(Yt,h = h, season = season, max.iter = 1)
+plot(bfit)
 
 ###
 ###
-bfit = bfast(Yt,
-             h = h,
-             season = season,
-             max.iter = 1)
+#Extrair posicao, data e numero de breakpoints
+Pbk = as.numeric(bfit$output[[1]]$Vt.bp) # Posicao dos breakpoints
+Dbp = dates[breaks] #Datas dos breakpoints
+NBk <- length(breaks) # Numero de breakpoints
 
-plot(bfit, type = c("trend"), ylim = c(-0.3, 1))
-breaks_bfast = bfit$output[[1]]$bp.Vt
-
-breaks = bfit$output[[1]]$Vt.bp
-
-length(breaks)
 trendCmp = bfit$output[[1]]$Tt
-BreaksDate = dates[breaks]
 
-lastBreak = if(!bfit$nobp$Vt) breaks[length(breaks)] else 1
+lastBreak = if (!bfit$nobp$Vt) breaks[length(breaks)] else 1
 lastBreakDate = as.character(dates[lastBreak])
-lastBreakJulianDate = format(lastBreakDate, "%Y%j")
 
+
+for(1 i  NBk)
 lastSegment = trendCmp[lastBreak:length(trendCmp)]
 
 Segment = lastSegment[1]
-slope = (lastSegment[2*floor(length(lastSegment)/3)] - lastSegment[floor(length(lastSegment)/3)])/(2*floor(length(lastSegment)/3) - floor(length(lastSegment)/3))
+
+slope = as.numeric(lm(lastSegment ~ c(1:length(lastSegment)))$coefficients[2])
+
+
+
 
 magnitude = bfit$Magnitude
-bfit$MagscellNumber
 
 break1 = breaks[1]
 break2 = breaks[2]
