@@ -35,8 +35,71 @@ close(pb)
 Sys.time() - ST
 
 #Time difference of 7.052529 mins
+#Time difference of 7.097569 mins
 
-ResultBfastNdvi2 <- ResultBfastNdvi
+ndvibr <- raster('F:\\DATASAN\\raster\\siad_raster_2016\\pa_br_ndvi_250_2017049_lapig.tif')
+
+shp <- shapefile('F:\\DATASAN\\raster\\siad_raster_2016\\siad_2016_points.shp')
+
+SIAD_2016_centroid <- as.data.frame(shp@coords)
+head(SIAD_2016_centroid)
+names(SIAD_2016_centroid) <- c('x', 'y')
+
+SIAD_2016_centroid$CellNumber <- cellFromXY(ndvibr, SIAD_2016_centroid[, 1:2] )
+write.csv(SIAD_2016_centroid, file = 'F:\\DATASAN\\raster\\siad_raster_2016\\SIAD_2016_Centroind_CellXY.csv', row.names = FALSE)
+
+siad <- raster('F:\\DATASAN\\raster\\siad_raster_2016\\SIAD_2016.tif')
+siad.df <- as.data.frame(siad, xy = TRUE)
+siad.df.naa <- na.omit(siad.df)
+
+tail(SIAD_2016_ID)
+
+ndvibr <- raster('F:\\DATASAN\\raster\\siad_raster_2016\\pa_br_ndvi_250_2017049_lapig.tif')
+
+SIAD_2016_ID$CellNumber <- cellFromXY(ndvibr, SIAD_2016_ID[,1:2] )
+
+#write.csv(SIAD_2016_ID, file = 'F:\\DATASAN\\raster\\siad_raster_2016\\SIAD_2016_ID_CellXY.csv', row.names = FALSE)
+
+
+
+library(parallel)
+cl <- makeCluster(detectCores() - 1)
+ST = Sys.time()
+szmtt = data.frame(t(parApply(cl = cl, ndvi.2, 1, RunBfast, h = h, season = season, LM = TRUE)))
+Sys.time() - ST #0.04440017 by pixel (4 x faster)
+stopCluster(cl)
+
+SIAD_2016_centroid <- read.csv('F:\\DATASAN\\raster\\siad_raster_2016\\SIAD_2016_Centroind_CellXY.csv')
+
+CellNumber <- SIAD_2016_centroid$CellNumber[1:100]
+
+ndvibr[] <- NA
+
+ndvibr[CellNumber] <- CellNumber
+
+r.1 <- stack(ndvibr,r)
+
+f2 <- function(x) {
+  if (!is.na(x[1])) {
+    pix <- MaxMinFilter(
+      na.interp(
+        as.numeric(x[])),3)
+    #RunBfast, h = h, season = season, LM = TRUE
+return(pix)
+    }
+}
+
+
+pix <- NULL
+ST <- Sys.time()
+pb <- txtProgressBar(min = 0, max = length(CellNumber), style = 3)
+for (l in 1:length(CellNumber)) {
+  pix <- rbind(pix, as.numeric(r[CellNumber[l] ]))
+  setTxtProgressBar(pb, l)
+}
+close(pb) 
+Sys.time() - ST
+
 
 
 #######################################################################################

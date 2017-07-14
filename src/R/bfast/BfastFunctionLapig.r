@@ -19,7 +19,7 @@ bfit = bfast(Yt,h = h, season = season, max.iter = 1)
 #Extrair posicao, data, numero de breakpoints e magnitude dos breakpoints
 PsoBK = as.numeric(bfit$output[[1]]$Vt.bp) # Posicao dos breakpoints
 DBK = ifelse(PsoBK > 0,
-             paste(dates[PsoBK], collapse = ';'),
+             paste(dates[PsoBK], collsapse = ';'),
              NA)[1]#Datas dos breakpoints
 NBK <- ifelse(PsoBK > 0,
               c(length(PsoBK)),
