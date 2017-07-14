@@ -101,6 +101,46 @@ close(pb)
 Sys.time() - ST
 
 
+###
+###
+setwd('H:\\DATASAN\\raster\\NDVI\\BRASIL\\NDVI')
+
+ls.f <- Sys.glob('*.tif')
+
+CellNumber <- SIAD_2016_centroid$CellNumber[1:100]
+pix <- data.frame(ID = CellNumber)
+
+ST <- Sys.time()
+pb <- txtProgressBar(min = 0, max = length(ls.f), style = 3)
+for (i in 1:10) {#length(ls.f)) {
+
+STp <- Sys.time()  
+  r <- raster(ls.f[i])
+  pix <- cbind(pix, r[CellNumber])
+print(Sys.time() - STp)
+
+#  setTxtProgressBar(pb, i)  
+}
+Sys.time() - ST
 
 #######################################################################################
 #######################################################################################
+
+
+
+
+CellNumber <- SIAD_2016_centroid$CellNumber
+pix <- data.frame(ID = CellNumber)
+ST <- Sys.time()
+pb <- txtProgressBar(min = 0, max = length(ls.f), style = 3)
+for (i in 1:5) {#length(ls.f)) {
+  STp <- Sys.time()  
+  #r <- raster(ls.f[i])
+  r <- raster(ls.f[i])[]
+  r <- r[CellNumber]
+  pix <- cbind(pix, ndvi = r[CellNumber])
+  print(Sys.time() - STp)
+}
+Sys.time() - ST
+
+
