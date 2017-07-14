@@ -68,7 +68,6 @@ lastBreak = if (!bfit$nobp$Vt) breaks[length(breaks)] else 1
 lastBreakDate = as.character(dates[lastBreak])
 
 
-for(1 i  NBk)
 lastSegment = trendCmp[lastBreak:length(trendCmp)]
 
 Segment = lastSegment[1]
@@ -96,34 +95,12 @@ breakDate1 = dates[breaks[1]]
 breakDate2 = dates[breaks[2]]
 
 
+c('ID', 'NBK', 'DBK', 'PBK', 'SLO', 'INT', 'MAG')
+
+paste(dates[breaks[1]],
+dates[breaks[2]], sep = ";")
 
 
-metadata = matrix(c(id,
-                    magnitude, 
-                    breaks[1], 
-                    breaks[2],  
-                    dates[breaks[1]],
-                    dates[breaks[2]],
-                    slope, 
-                    NOBSegmento1,
-                    NOBSegmento2,
-                    NOBSegmento3,
-                    intercept1,
-                    intercept2,
-                    intercept3),ncol=13, byrow=TRUE);
-colnames(metadata) = c("id",
-                       "magnitude",
-                       "firstBreak",
-                       "secondBreak",
-                       "firstBreakDate",
-                       "secondBreakDate",
-                       "slope",
-                       "NOBSegmento1",
-                       "NOBSegmento2",
-                       "NOBSegmento3",
-                       "intercept1",
-                       "intercept2",
-                       "intercept3");
 
 
 
