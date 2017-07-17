@@ -18,7 +18,7 @@ dates = scan('../../../data/bfast/timeline', what = 'date')
 h = 0.16099599
 season = "harmonic"
 
-ndvi.2 <- ndvi[,c(2,8:399)]
+ndvi.2 <- ndvi[1:10,c(2,8:399)]
 
 #Timeline NDVI
 dates <- as.Date(dates)
@@ -28,7 +28,7 @@ ST <- Sys.time()
 pb <- txtProgressBar(min = 0, max = nrow(ndvi.2), style = 3)
 for (l in 1:nrow(ndvi.2)) {
   pix <- as.numeric(ndvi.2[l,])
-  ResultBfastNdvi <- rbind(ResultBfastNdvi, RunBfast(pix, h, season))
+  ResultBfastNdvi <- rbind(ResultBfastNdvi, RunBfast(pix, h, season, LM = TRUE))
   setTxtProgressBar(pb, l)
 }
 close(pb) 
