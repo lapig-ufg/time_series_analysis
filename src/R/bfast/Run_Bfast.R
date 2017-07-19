@@ -5,6 +5,7 @@ options(scipen = 999)
 library(bfast)
 library(raster)
 library(forecast)
+library(plyr)
 source('../../../src/R/utils/MaxMinFilter.r')
 source('BfastFunctionLapig.R')
 
@@ -144,3 +145,41 @@ for (i in 1:5) {#length(ls.f)) {
 Sys.time() - ST
 
 
+
+#######################################################################################
+#######################################################################################
+#Bfast Output
+bfresult <- read.csv("F:\\DATASAN\\BfastResult\\BfastResult.csv")
+
+MAXBK <- max(bfresult$NBK)
+NCOL <- (MAXBK * 5) + 2
+STCOL <- seq(3, NCOL, MAXBK)
+
+NAMESCOL <- c(paste0(rep('PBK_',MAXBK),1:MAXBK), 
+              paste0(rep('DBK_',MAXBK),1:MAXBK), 
+                     paste0(rep('MAG_',MAXBK),1:MAXBK), 
+                            paste0(rep('INT_',MAXBK),1:MAXBK), 
+                                   paste0(rep('SLO_',MAXBK),1:MAXBK))
+
+bfresult2 <- bfresult[,1:2]
+
+bfresult2[ ,3:NCOL] <- ""
+names(bfresult2)[3:NCOL] <- NAMESCOL
+
+VAR <- names(bfresult)[-c(1:2)]
+
+for (i in 1:length(VAR)) {
+
+LSTR <- strsplit(as.character(bfresult[, VAR[i]]), ";")
+
+for (j in 1:10) {
+bfresult2[j,STCOL[i]:(length(LSTR[[j]]) + (STCOL[i] - 1))] <- LSTR[[j]]
+}
+}
+
+#sapply(bfresult2, class)
+write.csv(bfresult2, file = "F:\\DATASAN\\BfastResult\\BfastResult_cols.csv", row.names = FALSE)
+
+  
+#######################################################################################
+#######################################################################################
