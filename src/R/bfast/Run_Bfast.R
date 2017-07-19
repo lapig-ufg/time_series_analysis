@@ -5,6 +5,7 @@ options(scipen = 999)
 library(bfast)
 library(raster)
 library(forecast)
+library(plyr)
 source('../../../src/R/utils/MaxMinFilter.r')
 source('BfastFunctionLapig.R')
 
@@ -18,7 +19,7 @@ dates = scan('../../../data/bfast/timeline', what = 'date')
 h = 0.16099599
 season = "harmonic"
 
-ndvi.2 <- ndvi[,c(2,8:399)]
+ndvi.2 <- ndvi[1:10,c(2,8:399)]
 
 #Timeline NDVI
 dates <- as.Date(dates)
@@ -28,7 +29,7 @@ ST <- Sys.time()
 pb <- txtProgressBar(min = 0, max = nrow(ndvi.2), style = 3)
 for (l in 1:nrow(ndvi.2)) {
   pix <- as.numeric(ndvi.2[l,])
-  ResultBfastNdvi <- rbind(ResultBfastNdvi, RunBfast(pix, h, season))
+  ResultBfastNdvi <- rbind(ResultBfastNdvi, RunBfast(pix, h, season, LM = TRUE))
   setTxtProgressBar(pb, l)
 }
 close(pb) 
@@ -101,6 +102,84 @@ close(pb)
 Sys.time() - ST
 
 
+###
+###
+setwd('H:\\DATASAN\\raster\\NDVI\\BRASIL\\NDVI')
 
+ls.f <- Sys.glob('*.tif')
+
+CellNumber <- SIAD_2016_centroid$CellNumber[1:100]
+pix <- data.frame(ID = CellNumber)
+
+ST <- Sys.time()
+pb <- txtProgressBar(min = 0, max = length(ls.f), style = 3)
+for (i in 1:10) {#length(ls.f)) {
+
+STp <- Sys.time()  
+  r <- raster(ls.f[i])
+  pix <- cbind(pix, r[CellNumber])
+print(Sys.time() - STp)
+
+#  setTxtProgressBar(pb, i)  
+}
+Sys.time() - ST
+
+#######################################################################################
+#######################################################################################
+
+
+
+
+CellNumber <- SIAD_2016_centroid$CellNumber
+pix <- data.frame(ID = CellNumber)
+ST <- Sys.time()
+pb <- txtProgressBar(min = 0, max = length(ls.f), style = 3)
+for (i in 1:5) {#length(ls.f)) {
+  STp <- Sys.time()  
+  #r <- raster(ls.f[i])
+  r <- raster(ls.f[i])[]
+  r <- r[CellNumber]
+  pix <- cbind(pix, ndvi = r[CellNumber])
+  print(Sys.time() - STp)
+}
+Sys.time() - ST
+
+
+
+#######################################################################################
+#######################################################################################
+#Bfast Output
+bfresult <- read.csv("F:\\DATASAN\\BfastResult\\BfastResult.csv")
+
+MAXBK <- max(bfresult$NBK)
+NCOL <- (MAXBK * 5) + 2
+STCOL <- seq(3, NCOL, MAXBK)
+
+NAMESCOL <- c(paste0(rep('PBK_',MAXBK),1:MAXBK), 
+              paste0(rep('DBK_',MAXBK),1:MAXBK), 
+                     paste0(rep('MAG_',MAXBK),1:MAXBK), 
+                            paste0(rep('INT_',MAXBK),1:MAXBK), 
+                                   paste0(rep('SLO_',MAXBK),1:MAXBK))
+
+bfresult2 <- bfresult[,1:2]
+
+bfresult2[ ,3:NCOL] <- ""
+names(bfresult2)[3:NCOL] <- NAMESCOL
+
+VAR <- names(bfresult)[-c(1:2)]
+
+for (i in 1:length(VAR)) {
+
+LSTR <- strsplit(as.character(bfresult[, VAR[i]]), ";")
+
+for (j in 1:10) {
+bfresult2[j,STCOL[i]:(length(LSTR[[j]]) + (STCOL[i] - 1))] <- LSTR[[j]]
+}
+}
+
+#sapply(bfresult2, class)
+write.csv(bfresult2, file = "F:\\DATASAN\\BfastResult\\BfastResult_cols.csv", row.names = FALSE)
+
+  
 #######################################################################################
 #######################################################################################

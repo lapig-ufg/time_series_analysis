@@ -51,12 +51,12 @@ SLO <- paste(SLOPE, collapse = ';')
 PBK <- paste(PsoBK, collapse = ';')
 
 BfastResult <- rbind(BfastResult, c(ID, NBK, PBK, DBK, MAG, INT, SLO))
-names(BfastResult) <- c('ID', 'NBK', 'PBK', 'DBK', 'MAG', 'INT', 'SLO')
+#names(BfastResult) <- c('ID', 'NBK', 'PBK', 'DBK', 'MAG', 'INT', 'SLO')
 
 }else{
 PBK <- paste(PsoBK, collapse = ';')
 BfastResult <- rbind(BfastResult, c(ID, NBK, PBK, DBK, MAG))
-names(BfastResult) <- c('ID', 'NBK', 'PBK', 'DBK', 'MAG')
+#names(BfastResult) <- c('ID', 'NBK', 'PBK', 'DBK', 'MAG')
 }
 return(BfastResult)
 }
