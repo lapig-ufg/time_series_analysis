@@ -23,6 +23,8 @@ for (i in 1:length(CellNumber)) {
 close(pb) 
 Sys.time() - ST
 
+pontos <- read.csv("H:/DATASAN/campo/PontosPastagem_todos/NDVI_PontosPastagem_1.csv")
+
 pontos[10001:11436, 4:395] <- pix
 
 write.csv(pontos, file = "H:/DATASAN/campo/PontosPastagem_todos/NDVI_PontosPastagem_1.csv", row.names = FALSE)
