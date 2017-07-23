@@ -126,32 +126,36 @@ Sys.time() - ST
 
 #######################################################################################
 #######################################################################################
+#Run bfast Siad
+library(doBy)
 
+load("H:\\DATASAN\\NDVI_PolyCellNumber_2016_MaxMin_1.rdata")
+dim(PolyCellsNDVIInterp)
+length(unique(PolyCellsNDVIInterp$ID))
 
+PolyNDVI <- summaryBy(.~ID, data = PolyCellsNDVIInterp, FUN = c(mean))
+save(PolyNDVI, file = "H:\\DATASAN\\NDVI_Poly_1.rdata")
+load("H:\\DATASAN\\NDVI_Poly_1.rdata")
+PolyNDVI <- PolyNDVI[,-2]
+head(PolyNDVI[1:5])
 
+library(parallel)
+cl <- makeCluster(detectCores() - 1)
+ST = Sys.time()
+BfastPolyNDVI_1 = data.frame(t(parApply(cl = cl, PolyNDVI, 1, RunBfast, h = h, season = season, LM = TRUE)))
+Sys.time() - ST #Time difference of 1.325314 hours
+stopCluster(cl)
 
-CellNumber <- SIAD_2016_centroid$CellNumber
-pix <- data.frame(ID = CellNumber)
-ST <- Sys.time()
-pb <- txtProgressBar(min = 0, max = length(ls.f), style = 3)
-for (i in 1:5) {#length(ls.f)) {
-  STp <- Sys.time()  
-  #r <- raster(ls.f[i])
-  r <- raster(ls.f[i])[]
-  r <- r[CellNumber]
-  pix <- cbind(pix, ndvi = r[CellNumber])
-  print(Sys.time() - STp)
-}
-Sys.time() - ST
-
-
+names(BfastPolyNDVI_1) <- c('ID', 'NBK', 'PBK', 'DBK', 'MAG', 'INT', 'SLO')
+save(BfastPolyNDVI_1, file = "H:\\DATASAN\\BfastPolyNDVI_1.rdata")
 
 #######################################################################################
 #######################################################################################
 #Bfast Output
-bfresult <- read.csv("F:\\DATASAN\\BfastResult\\BfastResult.csv")
+#bfresult <- read.csv("F:\\DATASAN\\BfastResult\\BfastResult.csv")
+bfresult <- BfastPolyNDVI_1
 
-MAXBK <- max(bfresult$NBK)
+MAXBK <- max(as.numeric(bfresult$NBK))
 NCOL <- (MAXBK * 5) + 2
 STCOL <- seq(3, NCOL, MAXBK)
 
@@ -178,7 +182,7 @@ bfresult2[j,STCOL[i]:(length(LSTR[[j]]) + (STCOL[i] - 1))] <- LSTR[[j]]
 }
 
 #sapply(bfresult2, class)
-write.csv(bfresult2, file = "F:\\DATASAN\\BfastResult\\BfastResult_cols.csv", row.names = FALSE)
+write.csv(bfresult2, file = "H:\\DATASAN\\BfastPolyNDVI_splitrow.csv", row.names = FALSE)
 
   
 #######################################################################################
