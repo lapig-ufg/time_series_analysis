@@ -15,45 +15,44 @@ options(scipen = 999)
 #pacotes
 library(raster)
 library(doBy)
+source("F:\\DATASAN/Scripts/time_series_analysis/src/R/lci/DecSD_Function.R")
 ###
 ###
-shp <- shapefile('F:\\DATASAN\\shapefile\\GridBrasil\\GRID_BR_111.shp')
-r <- raster('H:\\DATASAN\\raster\\NDVI\\TANGURO\\NDVI\\CROP\\TAN_CROP_pa_br_ndvi_250_2017049_lapig.tif')
-Mod <- raster('H:\\DATASAN\\raster\\NDVI\\CellNUmberNDVIBrasil.tif')
-Dec <- raster('F:\\DATASAN\\raster\\srtm_relevo\\pa_br_srtm_declividade_30_2000_lapig.tif')
-Ndvi <- raster('H:\\DATASAN\\raster\\landsat\\2016-1.tif')
+shp <- shapefile('F:\\DATASAN\\DADOS\\lci\\gribbrasil\\GRID_BR_111.shp')
+shpbrlim <- shapefile('F:\\DATASAN\\DADOS\\limite_brasil\\pa_br_Limite_Brasil_250_2013_ibge.shp')
+Mod <- raster('F:\\DATASAN\\DADOS\\lci\\CellNUmberNDVIBrasil.tif')
+Dec <- raster('F:\\DATASAN\\DADOS\\lci\\declividade/pa_br_srtm_altitude_30_2000_lapig.tif')
+#Ndvi <- raster('F:\\DATASAN\\DADOS\\lci\\landsat/2016-1.tif')
+
+shplim <- crop(shp, Mod)
+plot(shplim)
+plot(Mod)
+plot(shpbrlim, add = TRUE)
+
+crs(shpbrlim) <- crs(Mod)
+
+ST <- Sys.time()
+ModBrMask <- mask(Mod, shpbrlim)
+ST - Sys.time()
+
+plot(Mod)
+plot(shpbrlim, add = TRUE, col = 'blue')
+writeRaster(ModBrMask, filename = 'F:\\DATASAN\\DADOS\\lci\\CellNUmberNDVIBrMask_OrigNcell.tif')
+
+shplim <- crop(shp, Mod)
+plot(shplim)
+
 ###
 ###
-f2 <- function(x) {
-  x = as.numeric(x)
-  sd((x/(mean(x)))/sd(x))
+# for (i in 1:460) {
+# for (i in 461:920) {
+# for (i in 921:1380) {
+for (i in 1381:1840) {
+ST <- Sys.time()
+
+ZonalStatLapig(Mod = Mod, shpi = shp[i,], Dec = Dec)
+  
+print(ST - Sys.time())
 }
-
-ID <- 1:length(shp)
-
-for (i in 892:901) {#length(shpt)) {
-  ST <- Sys.time()
-  
-  print(shp[ID[i], ]$ID)
-  
-  Mod.c <- crop(Mod, shp[ID[i], ])
-  
-  Dec.c <- crop(Dec, shp[ID[i], ])
-  
-  Mod.c.r <- projectRaster(Mod.c, Dec.c, method = 'ngb')
-  ModDec <- stack(Mod.c.r, Dec.c)
-  names(ModDec) <- c('CellNumber', 'declividade')
-  
-  ModDec.df <- as.data.frame(ModDec[])
-
-  DecMod.sd <- summaryBy(declividade ~ CellNumber, data = ModDec.df, FUN = c(f2, mean, sd, length))
-
-   print(dim(DecMod.sd))
-   print(ncell(Mod.c))
-  
-  print(Sys.time() - ST)
-#  count = count + 1;
-}
-
 ################################################################################
 ################################################################################
