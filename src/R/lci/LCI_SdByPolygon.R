@@ -15,6 +15,7 @@ options(scipen = 999)
 #pacotes
 library(raster)
 library(doBy)
+#library(pbapply)
 ###
 ###
 shp <- shapefile('F:\\DATASAN\\shapefile\\GridBrasil\\GRID_BR_111.shp')
@@ -55,5 +56,6 @@ for (i in 892:901) {#length(shpt)) {
 #  count = count + 1;
 }
 
+#processamentoaqua
 ################################################################################
 ################################################################################
