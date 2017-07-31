@@ -42,7 +42,11 @@ dates <- as.Date(strDates)
 r.p = na.interp(
   as.numeric(
     as.vector(
-      r[cellFromXY(r, c(-52.2764, -12.7874))])))
+      r[cellFromXY(r, c(-51.99488371, -19.80859634))])))
+
+#mean(r.p[(length(r.p) - 5):length(r.p)]) #c(-51.99488371, -19.80859634)
+#mean(r.p[(length(r.p) - 5):length(r.p)]) #c(-53.42228589, -21.14186956)
+
 
 ###
 ###
@@ -80,3 +84,7 @@ bfit$Mags
 ###
 ####################################################################################
 ####################################################################################
+
+
+setwd('F:\\DATASAN\\pvi_ndvi_br')
+r <- brick("LM_BR_Pasture_lm_results.tif")
