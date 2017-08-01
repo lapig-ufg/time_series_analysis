@@ -44,7 +44,15 @@ dates <- as.Date(dates)
 r.p = na.interp(
   as.numeric(
     as.vector(
+<<<<<<< HEAD
+      r[cellFromXY(r, c(-51.99488371, -19.80859634))])))
+
+#mean(r.p[(length(r.p) - 5):length(r.p)]) #c(-51.99488371, -19.80859634)
+#mean(r.p[(length(r.p) - 5):length(r.p)]) #c(-53.42228589, -21.14186956)
+
+=======
       r[cellNumber[4] ])))
+>>>>>>> 857ade4367eda55aef223610c2b7702ae6e1ad50
 
 ###
 ###
@@ -71,6 +79,18 @@ lastBreakDate = as.character(dates[lastBreak])
 for(1 i  NBk)
 lastSegment = trendCmp[lastBreak:length(trendCmp)]
 
+<<<<<<< HEAD
+bfit$Magnitude
+bfit$Mags
+###
+###
+####################################################################################
+####################################################################################
+
+
+setwd('F:\\DATASAN\\pvi_ndvi_br')
+r <- brick("LM_BR_Pasture_lm_results.tif")
+=======
 Segment = lastSegment[1]
 
 LM = as.numeric(lm(lastSegment ~ c(1:length(lastSegment)))$coefficients
@@ -133,3 +153,4 @@ colnames(metadata) = c("id",
 
 #######################################################################################
 #######################################################################################
+>>>>>>> 857ade4367eda55aef223610c2b7702ae6e1ad50
