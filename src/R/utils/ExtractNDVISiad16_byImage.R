@@ -10,11 +10,20 @@
 library(raster)
 
 #Arquivos
-load("F:\\DATASAN\\raster\\siad_raster_2016\\CellNumberPolSiad.rdata")
-
-###
-###
+load("F:\\DATASAN\\DADOS\\SiadBfast\\CellNumberPolSiad.rdata")
 PolNumber <- CellNumberPolSiad
+
+setwd('F:\\DATASAN\\DADOS\\NDVI')
+###
+###
+ls.f <- Sys.glob('*.tif')
+
+tem.list <- list()
+
+for (i in 1:length(ls.f)) {
+cat(ls.f[i], '\n')  
+  tem.list[[i]] <- raster(ls.f[i])
+}
 
 #Function to extract data
 ST <- Sys.time()

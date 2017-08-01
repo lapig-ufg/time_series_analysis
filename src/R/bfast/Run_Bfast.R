@@ -10,7 +10,7 @@ source('../../../src/R/utils/MaxMinFilter.r')
 source('BfastFunctionLapig.R')
 
 #Arquivos
-r <- brick('E:/pa_br_mod13q1_ndvi_250_2000_2017.tif');
+r <- brick('S:/PORTAL/time-series-db/pa_br_mod13q1_ndvi_250_2000_2017.tif');
 samples = read.csv('../../../data/bfast/samples.csv')
 ndvi = read.csv('../../../data/bfast/NDVIMod13q1.csv')
 dates = scan('../../../data/bfast/timeline', what = 'date')

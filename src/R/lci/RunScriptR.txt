@@ -1,0 +1,1 @@
+Rscript "H:\Dropbox (Pessoal)\carreira\Lapig\GitHubLapig\time_series_analysis\src\R\lci\sum_testcmd.r"
