@@ -1,0 +1,134 @@
+---
+title: "twdtw"
+author: "San"
+date: "11 de setembro de 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+```{r packages, echo=FALSE, message=FALSE, warning=FALSE}
+library(dtwSat)
+```
+
+
+```{r pattern, echo=FALSE, message=FALSE, warning=FALSE}
+load('/hds/ssd/DATASAN/result/twdtw/patt_pastagem.RData')
+pastPatt <- dados_patt
+  rm(dados_patt)
+timeline <- time(pastPatt@timeseries$pastagem_1)
+```
+
+#Padrão 1 Upper
+
+```{r limiar 1 Upper, echo=FALSE, message=FALSE, warning=FALSE}
+ndvi <- read.csv("/hds/ssd/limiaresTWDTW/limiar_grupo1.csv", sep = ";", dec = ",")
+pixm <- as.matrix(ndvi[,2])
+colnames(pixm) <- 'ndvi'
+TSzoo <- zoo(pixm, timeline)
+ts <- twdtwTimeSeries(TSzoo)
+# plot(ts, type = 'timeseries')
+
+log_fun <- logisticWeight(alpha = -0.1, beta = 100) 
+
+matches <- twdtwApply(x = ts, y = pastPatt, weight.fun = log_fun, keep = TRUE) 
+
+c("dist_patt 1 = ", as.numeric(round(matches@alignments[[1]]$pastagem_1$distance,2)))
+c("dist_patt 2 = ", as.numeric(round(matches@alignments[[1]]$pastagem_2$distance,2)))
+c("dist_patt 3 = ", as.numeric(round(matches@alignments[[1]]$pastagem_3$distance,2)))
+c("dist_patt 4 = ", as.numeric(round(matches@alignments[[1]]$pastagem_4$distance,2)))
+
+plot(x = matches, type = "alignments")
+# plot(x = matches, type = "paths", k <- 1:4) 
+
+# plot(x = matches, type = "classification",
+#      from = timeline[1], to = timeline[23], 
+#      by = "2 month", overlap = 1) 
+```
+#Padrão 1 Lower
+
+```{r limiar 1 Lower, echo=FALSE, message=FALSE, warning=FALSE}
+ndvi <- read.csv("/hds/ssd/limiaresTWDTW/limiar_grupo1.csv", sep = ";", dec = ",")
+pixm <- as.matrix(ndvi[,3])
+colnames(pixm) <- 'ndvi'
+TSzoo <- zoo(pixm, timeline)
+ts <- twdtwTimeSeries(TSzoo)
+# plot(ts, type = 'timeseries')
+
+log_fun <- logisticWeight(alpha = -0.1, beta = 100) 
+
+matches <- twdtwApply(x = ts, y = pastPatt, weight.fun = log_fun, keep = TRUE) 
+
+c("dist_patt 1 = ", as.numeric(round(matches@alignments[[1]]$pastagem_1$distance,2)))
+c("dist_patt 2 = ", as.numeric(round(matches@alignments[[1]]$pastagem_2$distance,2)))
+c("dist_patt 3 = ", as.numeric(round(matches@alignments[[1]]$pastagem_3$distance,2)))
+c("dist_patt 4 = ", as.numeric(round(matches@alignments[[1]]$pastagem_4$distance,2)))
+
+plot(x = matches, type = "alignments")
+# plot(x = matches, type = "paths", k <- 1:4) 
+# 
+# plot(x = matches, type = "classification",
+#      from = timeline[1], to = timeline[23], 
+#      by = "2 month", overlap = 1) 
+```
+
+
+
+
+#Padrão 2 Upper
+
+```{r limiar 2 Upper, echo=FALSE, message=FALSE, warning=FALSE}
+ndvi <- read.csv("/hds/ssd/limiaresTWDTW/limiar_grupo2.csv", sep = ";", dec = ",")
+pixm <- as.matrix(ndvi[,2])
+colnames(pixm) <- 'ndvi'
+TSzoo <- zoo(pixm, timeline)
+ts <- twdtwTimeSeries(TSzoo)
+# plot(ts, type = 'timeseries')
+
+log_fun <- logisticWeight(alpha = -0.1, beta = 100) 
+
+matches <- twdtwApply(x = ts, y = pastPatt, weight.fun = log_fun, keep = TRUE) 
+
+c("dist_patt 1 = ", as.numeric(round(matches@alignments[[1]]$pastagem_1$distance,2)))
+c("dist_patt 2 = ", as.numeric(round(matches@alignments[[1]]$pastagem_2$distance,2)))
+c("dist_patt 3 = ", as.numeric(round(matches@alignments[[1]]$pastagem_3$distance,2)))
+c("dist_patt 4 = ", as.numeric(round(matches@alignments[[1]]$pastagem_4$distance,2)))
+
+plot(x = matches, type = "alignments")
+# plot(x = matches, type = "paths", k <- 1:4) 
+
+# plot(x = matches, type = "classification",
+#      from = timeline[1], to = timeline[23], 
+#      by = "2 month", overlap = 1) 
+```
+#Padrão 2 Lower
+
+```{r limiar 2 Lower, echo=FALSE, message=FALSE, warning=FALSE}
+ndvi <- read.csv("/hds/ssd/limiaresTWDTW/limiar_grupo2.csv", sep = ";", dec = ",")
+pixm <- as.matrix(ndvi[,3])
+colnames(pixm) <- 'ndvi'
+TSzoo <- zoo(pixm, timeline)
+ts <- twdtwTimeSeries(TSzoo)
+# plot(ts, type = 'timeseries')
+
+log_fun <- logisticWeight(alpha = -0.1, beta = 100) 
+
+matches <- twdtwApply(x = ts, y = pastPatt, weight.fun = log_fun, keep = TRUE) 
+
+c("dist_patt 1 = ", as.numeric(round(matches@alignments[[1]]$pastagem_1$distance,2)))
+c("dist_patt 2 = ", as.numeric(round(matches@alignments[[1]]$pastagem_2$distance,2)))
+c("dist_patt 3 = ", as.numeric(round(matches@alignments[[1]]$pastagem_3$distance,2)))
+c("dist_patt 4 = ", as.numeric(round(matches@alignments[[1]]$pastagem_4$distance,2)))
+
+plot(x = matches, type = "alignments")
+# plot(x = matches, type = "paths", k <- 1:4) 
+# 
+# plot(x = matches, type = "classification",
+#      from = timeline[1], to = timeline[23], 
+#      by = "2 month", overlap = 1) 
+```
