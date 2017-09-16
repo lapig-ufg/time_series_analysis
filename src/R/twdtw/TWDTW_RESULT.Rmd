@@ -9,126 +9,209 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
 
-
-```{r packages, echo=FALSE, message=FALSE, warning=FALSE}
+```{r packFun, echo=FALSE, message=FALSE, warning=FALSE}
+#Pacotes e funcoes
 library(dtwSat)
+log_fun <- logisticWeight(alpha = -0.1, beta = 100) 
 ```
 
 
-```{r pattern, echo=FALSE, message=FALSE, warning=FALSE}
+```{r files, echo=FALSE, message=FALSE, warning=FALSE}
+#Padroes
 load('/hds/ssd/DATASAN/result/twdtw/patt_pastagem.RData')
-pastPatt <- dados_patt
-  rm(dados_patt)
-timeline <- time(pastPatt@timeseries$pastagem_1)
+
+#Limiares
+limiar1 <- read.csv("/hds/ssd/limiaresTWDTW/limiar_grupo1.csv", sep = ";", dec = ",")
+limiar2 <- read.csv("/hds/ssd/limiaresTWDTW/limiar_grupo2.csv", sep = ";", dec = ",")
+limiar3 <- read.csv("/hds/ssd/limiaresTWDTW/limiar_grupo3.csv", sep = ";", dec = ",")
+limiar4 <- read.csv("/hds/ssd/limiaresTWDTW/limiar_grupo4.csv", sep = ";", dec = ",")
 ```
 
-#Padrão 1 Upper
 
-```{r limiar 1 Upper, echo=FALSE, message=FALSE, warning=FALSE}
-ndvi <- read.csv("/hds/ssd/limiaresTWDTW/limiar_grupo1.csv", sep = ";", dec = ",")
-pixm <- as.matrix(ndvi[,2])
-colnames(pixm) <- 'ndvi'
-TSzoo <- zoo(pixm, timeline)
-ts <- twdtwTimeSeries(TSzoo)
-# plot(ts, type = 'timeseries')
+#Gráficos dos padrões UPPER e LOWERs
 
-log_fun <- logisticWeight(alpha = -0.1, beta = 100) 
+```{r patLim, echo=FALSE, message=FALSE, warning=FALSE, fig.width=5, fig.height=3, fig.align='center'}
+#timeline
+timeline <- time(dados_patt@timeseries$pastagem_1)
 
-matches <- twdtwApply(x = ts, y = pastPatt, weight.fun = log_fun, keep = TRUE) 
+#Padroes
+padrao1 <- as.numeric(dados_patt@timeseries$pastagem_1)
+padrao2 <- as.numeric(dados_patt@timeseries$pastagem_2)
+padrao3 <- as.numeric(dados_patt@timeseries$pastagem_3)
+padrao4 <- as.numeric(dados_patt@timeseries$pastagem_4)
 
-c("dist_patt 1 = ", as.numeric(round(matches@alignments[[1]]$pastagem_1$distance,2)))
-c("dist_patt 2 = ", as.numeric(round(matches@alignments[[1]]$pastagem_2$distance,2)))
-c("dist_patt 3 = ", as.numeric(round(matches@alignments[[1]]$pastagem_3$distance,2)))
-c("dist_patt 4 = ", as.numeric(round(matches@alignments[[1]]$pastagem_4$distance,2)))
+#Limiares
+names(limiar1) <- c("id", "upper1", "lower1")
+names(limiar2) <- c("id", "upper2", "lower2")
+names(limiar3) <- c("id", "upper3", "lower3")
+names(limiar4) <- c("id", "upper4", "lower4")
 
-plot(x = matches, type = "alignments")
-# plot(x = matches, type = "paths", k <- 1:4) 
+#padroes e limiares
+patLim <- cbind(padrao1, limiar1[,-1],
+                padrao2, limiar2[,-1],
+                padrao3, limiar3[,-1],
+                padrao4, limiar4[,-1])
 
-# plot(x = matches, type = "classification",
-#      from = timeline[1], to = timeline[23], 
-#      by = "2 month", overlap = 1) 
-```
-#Padrão 1 Lower
+#matrix
+patLim <- as.matrix(patLim)
 
-```{r limiar 1 Lower, echo=FALSE, message=FALSE, warning=FALSE}
-ndvi <- read.csv("/hds/ssd/limiaresTWDTW/limiar_grupo1.csv", sep = ";", dec = ",")
-pixm <- as.matrix(ndvi[,3])
-colnames(pixm) <- 'ndvi'
-TSzoo <- zoo(pixm, timeline)
-ts <- twdtwTimeSeries(TSzoo)
-# plot(ts, type = 'timeseries')
+#zoo matrix
+TSzoo <- zoo(patLim, timeline)
 
-log_fun <- logisticWeight(alpha = -0.1, beta = 100) 
+#timeserie twdtw
+ts1 <- twdtwTimeSeries(TSzoo[,1:3])
+ts2 <- twdtwTimeSeries(TSzoo[,4:6])
+ts3 <- twdtwTimeSeries(TSzoo[,7:9])
+ts4 <- twdtwTimeSeries(TSzoo[,10:12])
 
-matches <- twdtwApply(x = ts, y = pastPatt, weight.fun = log_fun, keep = TRUE) 
+#plot ts
+plot(ts1, type = "timeseries") + ylim(0,1)
+plot(ts2, type = "timeseries") + ylim(0,1)
+plot(ts3, type = "timeseries") + ylim(0,1)
+plot(ts4, type = "timeseries") + ylim(0,1)
 
-c("dist_patt 1 = ", as.numeric(round(matches@alignments[[1]]$pastagem_1$distance,2)))
-c("dist_patt 2 = ", as.numeric(round(matches@alignments[[1]]$pastagem_2$distance,2)))
-c("dist_patt 3 = ", as.numeric(round(matches@alignments[[1]]$pastagem_3$distance,2)))
-c("dist_patt 4 = ", as.numeric(round(matches@alignments[[1]]$pastagem_4$distance,2)))
-
-plot(x = matches, type = "alignments")
-# plot(x = matches, type = "paths", k <- 1:4) 
+# plot(padrao1, ylim = c(0,1), t = "l", col = "black", main = "PADRAO 1")
+# lines(limiar1[,2], ylim = c(0,1), col = "red", lty = 2)
+# lines(limiar1[,3], ylim = c(0,1), col = "red", lty = 2)
 # 
-# plot(x = matches, type = "classification",
-#      from = timeline[1], to = timeline[23], 
-#      by = "2 month", overlap = 1) 
-```
-
-
-
-
-#Padrão 2 Upper
-
-```{r limiar 2 Upper, echo=FALSE, message=FALSE, warning=FALSE}
-ndvi <- read.csv("/hds/ssd/limiaresTWDTW/limiar_grupo2.csv", sep = ";", dec = ",")
-pixm <- as.matrix(ndvi[,2])
-colnames(pixm) <- 'ndvi'
-TSzoo <- zoo(pixm, timeline)
-ts <- twdtwTimeSeries(TSzoo)
-# plot(ts, type = 'timeseries')
-
-log_fun <- logisticWeight(alpha = -0.1, beta = 100) 
-
-matches <- twdtwApply(x = ts, y = pastPatt, weight.fun = log_fun, keep = TRUE) 
-
-c("dist_patt 1 = ", as.numeric(round(matches@alignments[[1]]$pastagem_1$distance,2)))
-c("dist_patt 2 = ", as.numeric(round(matches@alignments[[1]]$pastagem_2$distance,2)))
-c("dist_patt 3 = ", as.numeric(round(matches@alignments[[1]]$pastagem_3$distance,2)))
-c("dist_patt 4 = ", as.numeric(round(matches@alignments[[1]]$pastagem_4$distance,2)))
-
-plot(x = matches, type = "alignments")
-# plot(x = matches, type = "paths", k <- 1:4) 
-
-# plot(x = matches, type = "classification",
-#      from = timeline[1], to = timeline[23], 
-#      by = "2 month", overlap = 1) 
-```
-#Padrão 2 Lower
-
-```{r limiar 2 Lower, echo=FALSE, message=FALSE, warning=FALSE}
-ndvi <- read.csv("/hds/ssd/limiaresTWDTW/limiar_grupo2.csv", sep = ";", dec = ",")
-pixm <- as.matrix(ndvi[,3])
-colnames(pixm) <- 'ndvi'
-TSzoo <- zoo(pixm, timeline)
-ts <- twdtwTimeSeries(TSzoo)
-# plot(ts, type = 'timeseries')
-
-log_fun <- logisticWeight(alpha = -0.1, beta = 100) 
-
-matches <- twdtwApply(x = ts, y = pastPatt, weight.fun = log_fun, keep = TRUE) 
-
-c("dist_patt 1 = ", as.numeric(round(matches@alignments[[1]]$pastagem_1$distance,2)))
-c("dist_patt 2 = ", as.numeric(round(matches@alignments[[1]]$pastagem_2$distance,2)))
-c("dist_patt 3 = ", as.numeric(round(matches@alignments[[1]]$pastagem_3$distance,2)))
-c("dist_patt 4 = ", as.numeric(round(matches@alignments[[1]]$pastagem_4$distance,2)))
-
-plot(x = matches, type = "alignments")
-# plot(x = matches, type = "paths", k <- 1:4) 
+# plot(padrao2, ylim = c(0,1), t = "l", col = "black", main = "PADRAO 2")
+# lines(limiar2[,2], ylim = c(0,1), col = "red", lty = 2)
+# lines(limiar2[,3], ylim = c(0,1), col = "red", lty = 2)
 # 
-# plot(x = matches, type = "classification",
-#      from = timeline[1], to = timeline[23], 
-#      by = "2 month", overlap = 1) 
+# plot(padrao3, ylim = c(0,1), t = "l", col = "black", main = "PADRAO 3")
+# lines(limiar3[,2], ylim = c(0,1), col = "red", lty = 2)
+# lines(limiar3[,3], ylim = c(0,1), col = "red", lty = 2)
+# 
+# plot(padrao4, ylim = c(0,1), t = "l", col = "black", main = "PADRAO 4")
+# lines(limiar4[,2], ylim = c(0,1), col = "red", lty = 2)
+# lines(limiar4[,3], ylim = c(0,1), col = "red", lty = 2)
+
+```
+
+
+#Distância do Padrão 1
+
+```{r distPatt1, echo=FALSE, message=FALSE, warning=FALSE, fig.width=7, fig.height=3, fig.align='center'}
+#Upper
+ts <- twdtwTimeSeries(
+  zoo(
+    as.matrix(limiar1[,2]),
+    timeline))
+
+matches <- twdtwApply(x = ts, y = dados_patt, weight.fun = log_fun, keep = TRUE) 
+
+upperDist1 <- c("UPPER 1= ", as.numeric(round(matches@alignments[[1]]$pastagem_1$distance,2)))
+upperDist1
+
+plot(x = matches, type = "alignments")
+
+#Lower
+ts <- twdtwTimeSeries(
+  zoo(
+    as.matrix(limiar1[,3]),
+    timeline))
+
+matches <- twdtwApply(x = ts, y = dados_patt, weight.fun = log_fun, keep = TRUE) 
+
+lowerDist1 <- c("LOWER 1= ", as.numeric(round(matches@alignments[[1]]$pastagem_1$distance,2)))
+lowerDist1
+
+plot(x = matches, type = "alignments")
+```
+
+
+#Distância do Padrão 2
+
+```{r distPatt2, echo=FALSE, message=FALSE, warning=FALSE, fig.width=7, fig.height=3, fig.align='center'}
+#Upper
+ts <- twdtwTimeSeries(
+  zoo(
+    as.matrix(limiar2[,2]),
+    timeline))
+
+matches <- twdtwApply(x = ts, y = dados_patt, weight.fun = log_fun, keep = TRUE) 
+
+upperDist2 <- c("UPPER 2= ", as.numeric(round(matches@alignments[[1]]$pastagem_2$distance,2)))
+upperDist2
+
+plot(x = matches, type = "alignments")
+
+#Lower
+ts <- twdtwTimeSeries(
+  zoo(
+    as.matrix(limiar2[,3]),
+    timeline))
+
+matches <- twdtwApply(x = ts, y = dados_patt, weight.fun = log_fun, keep = TRUE) 
+
+lowerDist2 <- c("LOWER 2= ", as.numeric(round(matches@alignments[[1]]$pastagem_2$distance,2)))
+lowerDist2
+
+plot(x = matches, type = "alignments")
+```
+
+
+#Distância do Padrão 3
+
+```{r distPatt3, echo=FALSE, message=FALSE, warning=FALSE, fig.width=7, fig.height=3, fig.align='center'}
+#Upper
+ts <- twdtwTimeSeries(
+  zoo(
+    as.matrix(limiar3[,2]),
+    timeline))
+
+matches <- twdtwApply(x = ts, y = dados_patt, weight.fun = log_fun, keep = TRUE) 
+
+upperDist3 <- c("UPPER 3= ", as.numeric(round(matches@alignments[[1]]$pastagem_3$distance,2)))
+upperDist3
+
+plot(x = matches, type = "alignments")
+
+#Lower
+ts <- twdtwTimeSeries(
+  zoo(
+    as.matrix(limiar3[,3]),
+    timeline))
+
+matches <- twdtwApply(x = ts, y = dados_patt, weight.fun = log_fun, keep = TRUE) 
+
+lowerDist3 <-c("LOWER 3= ", as.numeric(round(matches@alignments[[1]]$pastagem_3$distance,2)))
+lowerDist3
+ 
+plot(x = matches, type = "alignments")
+```
+
+
+#Distância do Padrão 4
+
+```{r distPatt4, echo=FALSE, message=FALSE, warning=FALSE, fig.width=7, fig.height=3, fig.align='center'}
+#Upper
+ts <- twdtwTimeSeries(
+  zoo(
+    as.matrix(limiar4[,2]),
+    timeline))
+
+matches <- twdtwApply(x = ts, y = dados_patt, weight.fun = log_fun, keep = TRUE) 
+
+upperDist4 <- c("UPPER 4= ", as.numeric(round(matches@alignments[[1]]$pastagem_4$distance,2)))
+upperDist4
+
+plot(x = matches, type = "alignments")
+
+#Lower
+ts <- twdtwTimeSeries(
+  zoo(
+    as.matrix(limiar4[,3]),
+    timeline))
+
+matches <- twdtwApply(x = ts, y = dados_patt, weight.fun = log_fun, keep = TRUE) 
+
+lowerDist4 <- c("LOWER 4= ", as.numeric(round(matches@alignments[[1]]$pastagem_4$distance,2)))
+lowerDist4
+
+plot(x = matches, type = "alignments")
+
+print(c(lowerDist1, lowerDist2, lowerDist3, lowerDist4))
+print(c(upperDist1, upperDist2, upperDist3, upperDist4))
 ```
