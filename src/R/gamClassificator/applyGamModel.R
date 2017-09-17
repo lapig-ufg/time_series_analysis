@@ -6,7 +6,7 @@
 # pacotes: forecast; mFilter
 
 gamApply <-function(x){ #y=serie ; lon=longitude  ; lat=latitude
-  load("gamModel.RData")
+  load("/data/PROCESSAMENTO/SENTINEL/QUALIDADE_PASTAGEM/GitHub/time_series_analysis/src/R/gamClassificator/gamModel.RData")
   y <- x[-c(1:2)]
   lon = x[1]
   lat = x[2]
