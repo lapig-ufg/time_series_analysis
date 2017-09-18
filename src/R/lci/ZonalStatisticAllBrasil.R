@@ -1,17 +1,19 @@
-ZonalStatLapig <- function(x) {
+ZonalStatLapig <- function(pix, rlow, rhigh) {
   library(raster)
-  pix = as.numeric(x[3])
-  rlow = raster("/hds/dados_work/DATASAN/raster/NDVI/CellNUmberNDVIBrasil_brlimite.tif")
-  rhigh = raster("/hds/dados_work/DATASAN/raster/LCI/pa_br_landsat_ndvi_median_30_2016_lapig.tif")
+  pix = pix
+  rlow = rlow
+  rhigh = rhigh
   
   rowColExt <- rowColFromCell(rlow, pix)
-  rowExt <- rowColExt[1]
-  colExt <- rowColExt[2]
-  cellExt <- extent(rlow, rowExt, rowExt, colExt, colExt)
-  # cropRlow <- crop(rlow, cellExt)
-  cropRhigh <- crop(rhigh, cellExt)
+  # rowExt <- rowColExt[1]
+  # colExt <- rowColExt[2]
+  # cellExt <- extent(rlow, rowExt, rowExt, colExt, colExt)
+  # # cropRlow <- crop(rlow, cellExt)
+  # cropRhigh <- crop(rhigh, cellExt)
+  rowColExt <- rowColFromCell(rlow, pix)
+  cropRhighByPixRlow <- extract(rhigh, extent(rlow, rowColExt[1], rowColExt[1], rowColExt[2], rowColExt[2]))/10000
   
-  cropRhighByPixRlow <- cropRhigh[]/10000
+  # cropRhighByPixRlow <- cropRhigh[]/10000
 
   RESULT <- c(cellNumber = pix,
               MEAN = mean(cropRhighByPixRlow, na.rm = TRUE),

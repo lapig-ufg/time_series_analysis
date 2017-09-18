@@ -22,19 +22,16 @@ source("/hds/dados_work/GitHub/time_series_analysis/src/R/lci/ZonalStatisticAllB
 ndviCell <- raster("/hds/dados_work/DATASAN/raster/NDVI/CellNUmberNDVIBrasil_brlimite.tif")
 ndviLandsat <- raster("/hds/dados_work/DATASAN/raster/LCI/pa_br_landsat_ndvi_median_30_2016_lapig.tif")
 
-# rtp <- rasterToPoints(ndviCell)
-# ndviCellBrLim <- as.data.frame(rtp)
-# names(ndviCellBrLim) <- c("longitude", "latitude", "cellNumber")
-# save(ndviCellBrLim, file = "/hds/dados_work/DATASAN/raster/NDVI/CellNUmberNDVIBrasil_brlimite.RData")
 load("/hds/dados_work/DATASAN/raster/NDVI/CellNUmberNDVIBrasil_brlimite.RData")
+# cellNumber <- ndviCellBrLim$cellNumber
+# rm(ndviCellBrLim)
 gc(reset = TRUE)
 
-
-cl <- makeCluster(detectCores() - 1)
-ST = Sys.time()
-ndviCellBrLimZN <- t(parApply(cl = cl, ndviCellBrLim, MARGIN = 1, FUN = ZonalStatLapig))
+ST <- Sys.time()
+f2 <- function(x) {ZonalStatLapig(pix = as.numeric(x[3]), rlow = ndviCell, rhigh = ndviLandsat)}
+ndviCellBrLimZN <- t(apply(ndviCellBrLim, 1, FUN = f2))
 Sys.time() - ST
+
 save(ndviCellBrLimZN, file = "/hds/dados_work/DATASAN/raster/NDVI/ZN_NDVI_Landsat.RData")
-stopCluster(cl)
 ####################################################################################################
 ####################################################################################################
